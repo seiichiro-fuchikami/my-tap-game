@@ -69,21 +69,36 @@
                     clearInterval(timerId);
                     isPlaying = false;
                     countBtn.disabled = true;
+
+                    // --- ここから名前入力とランキング送信 ---
             
-                    // --- 【ここから追加：ハイスコア判定と保存】 ---
+                    // 1. ポップアップを出して名前を聞く
+                    // （キャンセルされた場合や空欄の場合は「名無しさん」にする）
+                    let userName = prompt("タイムアップ！記録は " + count + " 回でした！\nランキングに載せる名前を入力してください:", "名無しさん");
+            
+                    if (userName === null || userName === "") {
+                        userName = "名無しさん";
+                    }
+
+                    // 2. 50回以上の判定（音の再生など）
+                    if (count >= 50) {
+                        finishSpecialSound.play();
+                        timerDisplay.textContent = `伝説級！記録: ${count}回`;
+                    } else {
+                        finishNormalSound.play();
+                        timerDisplay.textContent = `終了！記録: ${count}回`;
+                    }
+
+                    // 3. Firebaseにスコアを送信する
+                    // 前のステップで作った「saveWorldScore」関数を呼び出します
+                    saveWorldScore(userName, count);
+            
+                    // 4. 自分のハイスコア（LocalStorage）も更新
                     if (count > highScore) {
                         highScore = count;
-                        // ブラウザのメモ帳（localStorage）に保存
                         localStorage.setItem('tapGameHighScore', highScore);
                         highScoreDisplay.textContent = `自己ベスト: ${highScore}回`;
-                
-                        timerDisplay.textContent = `新記録達成！: ${count}回`;
-                        finishSpecialSound.play(); 
-                    } else {
-                        timerDisplay.textContent = `タイムアップ！: ${count}回`;
-                        finishNormalSound.play();
                     }
-                    // -------------------------------------------
                 }
             }, 10);
         }
@@ -141,10 +156,56 @@
                 // ...既存のカウント処理
             }
         });
+        <script type="module">
+          import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+          import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs } 
+            from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+          // 先ほどコピーしたConfigをここに貼り付け
+          const firebaseConfig = {
+            apiKey: "AIzaSyBol6H_xd0pmGlB7dgyjdaTSlu28iptTmc",
+            authDomain: "tap-game-ranking.firebaseapp.com",
+            projectId: "tap-game-ranking",
+            storageBucket: "tap-game-ranking.firebasestorage.app",
+            messagingSenderId: "175348264963",
+            appId: "1:175348264963:web:b1638845dd1f7d8ef45e36",
+            measurementId: "G-JGQ0ZF8PEV"
+          };
+
+          const app = initializeApp(firebaseConfig);
+          const db = getFirestore(app);
+
+          // --- スコアを世界に送信する関数 ---
+          async function saveWorldScore(userName, score) {
+            try {
+              await addDoc(collection(db, "rankings"), {
+                name: userName,
+                score: score,
+                timestamp: new Date()
+              });
+              console.log("スコア送信完了！");
+              displayRanking(); // 送信後にランキングを更新
+            } catch (e) {
+              console.error("エラー: ", e);
+            }
+          }
+
+          // --- 世界ランキングを取得して表示する関数 ---
+          async function displayRanking() {
+            const q = query(collection(db, "rankings"), orderBy("score", "desc"), limit(5));
+            const querySnapshot = await getDocs(q);
+            let html = "<h3>世界TOP 5</h3>";
+            querySnapshot.forEach((doc) => {
+              html += `<p>${doc.data().name}: ${doc.data().score}回</p>`;
+            });
+            document.getElementById('rankingBoard').innerHTML = html;
+          }
+        </script>
     </script>
 </body>
 
 </html>
+
 
 
 
