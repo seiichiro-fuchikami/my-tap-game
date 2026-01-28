@@ -156,13 +156,14 @@
                 // ...既存のカウント処理
             }
         });
-        <script type="module">
-          import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-          import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs } 
-            from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    </script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs } 
+        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-          // 先ほどコピーしたConfigをここに貼り付け
-          const firebaseConfig = {
+        // 先ほどコピーしたConfigをここに貼り付け
+        const firebaseConfig = {
             apiKey: "AIzaSyBol6H_xd0pmGlB7dgyjdaTSlu28iptTmc",
             authDomain: "tap-game-ranking.firebaseapp.com",
             projectId: "tap-game-ranking",
@@ -170,13 +171,13 @@
             messagingSenderId: "175348264963",
             appId: "1:175348264963:web:b1638845dd1f7d8ef45e36",
             measurementId: "G-JGQ0ZF8PEV"
-          };
+        };
 
-          const app = initializeApp(firebaseConfig);
-          const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-          // --- スコアを世界に送信する関数 ---
-          async function saveWorldScore(userName, score) {
+        // --- スコアを世界に送信する関数 ---
+        async function saveWorldScore(userName, score) {
             try {
               await addDoc(collection(db, "rankings"), {
                 name: userName,
@@ -188,10 +189,10 @@
             } catch (e) {
               console.error("エラー: ", e);
             }
-          }
+        }
 
-          // --- 世界ランキングを取得して表示する関数 ---
-          async function displayRanking() {
+        // --- 世界ランキングを取得して表示する関数 ---
+        async function displayRanking() {
             const q = query(collection(db, "rankings"), orderBy("score", "desc"), limit(5));
             const querySnapshot = await getDocs(q);
             let html = "<h3>世界TOP 5</h3>";
@@ -199,12 +200,12 @@
               html += `<p>${doc.data().name}: ${doc.data().score}回</p>`;
             });
             document.getElementById('rankingBoard').innerHTML = html;
-          }
-        </script>
+        }
     </script>
 </body>
 
 </html>
+
 
 
 
