@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10秒連打ゲーム</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Helvetica', sans-serif;
+            background-color: #e3f2fd;
+        }
+        #timer { font-size: 1.5rem; color: #ff5252; font-weight: bold; }
+        #counter { font-size: 6rem; margin: 10px 0; transition: color 0.3s; }
+        
+        .buttons { display: flex; gap: 10px; }
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            touch-action: manipulation;
+        }
+        #countBtn { background-color: #2196f3; color: white; }
+        #resetBtn { background-color: #9e9e9e; color: white; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <div id="timer">残り時間: 10.00s</div>
+    <div id="counter">0</div>
+
+    <div class="buttons">
+        <button id="countBtn">連打！</button>
+        <button id="resetBtn">リセット</button>
+    </div>
+
+    <script>
+        let count = 0;
+        let timeLeft = 10.0;
+        let timerId = null;
+        let isPlaying = false;
+
+        const counterDisplay = document.getElementById('counter');
+        const timerDisplay = document.getElementById('timer');
+        const countBtn = document.getElementById('countBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // カウントアップ関数
+        countBtn.addEventListener('click', () => {
+            if (!isPlaying && timeLeft > 0) {
+                startTimer();
+            }
+            if (isPlaying) {
+                count++;
+                counterDisplay.textContent = count;
+                
+                // 【演出】10回ごとに色を変える
+                if (count % 10 === 0) {
+                    const randomColor = `hsl(${Math.random() * 360}, 70%, 50%)`;
+                    counterDisplay.style.color = randomColor;
+                }
+            }
+        });
+
+        // タイマー開始
+        function startTimer() {
+            isPlaying = true;
+            timerId = setInterval(() => {
+                timeLeft -= 0.01;
+                timerDisplay.textContent = `残り時間: ${timeLeft.toFixed(2)}s`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerId);
+                    isPlaying = false;
+                    countBtn.disabled = true;
+                    timerDisplay.textContent = "タイムアップ！";
+                }
+            }, 10);
+        }
+
+        // 【リセット機能】
+        resetBtn.addEventListener('click', () => {
+            clearInterval(timerId);
+            count = 0;
+            timeLeft = 10.0;
+            isPlaying = false;
+            counterDisplay.textContent = count;
+            counterDisplay.style.color = "#333";
+            timerDisplay.textContent = `残り時間: 10.00s`;
+            countBtn.disabled = false;
+        });
+    </script>
+</body>
+</html>
