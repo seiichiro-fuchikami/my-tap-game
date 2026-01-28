@@ -81,7 +81,16 @@
                     clearInterval(timerId);
                     isPlaying = false;
                     countBtn.disabled = true;
-                    timerDisplay.textContent = "タイムアップ！";
+            
+                    // --- 【ここから追加：終了時の判定と音】 ---
+                    if (count >= 50) {
+                        timerDisplay.textContent = `すごい！記録: ${count}回`;
+                        finishSpecialSound.play(); // ファンファーレ！
+                    } else {
+                        timerDisplay.textContent = `タイムアップ！記録: ${count}回`;
+                        finishNormalSound.play();  // 通常の終了音
+                    }
+                    // ---------------------------------------
                 }
             }, 10);
         }
@@ -99,6 +108,8 @@
         });
         // 1. 音源を読み込む
         const tapSound = new Audio('tap.mp3');
+        const finishNormalSound = new Audio('finish_normal.mp3');
+        const finishSpecialSound = new Audio('finish_special.mp3');
 
         // 2. 再生関数（連続タップに対応させる工夫）
         function playTapSound() {
@@ -117,4 +128,5 @@
 </body>
 
 </html>
+
 
