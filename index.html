@@ -98,22 +98,23 @@
             countBtn.disabled = false;
         });
         // 1. 音源を読み込む
-const tapSound = new Audio('tap.mp3');
+        const tapSound = new Audio('tap.mp3');
 
-// 2. 再生関数（連続タップに対応させる工夫）
-function playTapSound() {
-    tapSound.currentTime = 0; // 再生位置を先頭に戻す（連打用）
-    tapSound.play();
-}
+        // 2. 再生関数（連続タップに対応させる工夫）
+        function playTapSound() {
+            tapSound.currentTime = 0; // 再生位置を先頭に戻す（連打用）
+            tapSound.play();
+        }
 
-// 3. ボタンのクリックイベントの中で呼び出す
-countBtn.addEventListener('click', () => {
-    if (isPlaying) {
-        playTapSound(); // ここで鳴らす！
-        // ...既存のカウント処理
-    }
-});
+        // 3. ボタンのクリックイベントの中で呼び出す
+        countBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                playTapSound(); // ここで鳴らす！
+                // ...既存のカウント処理
+            }
+        });
     </script>
 </body>
 
 </html>
+
