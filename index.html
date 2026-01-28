@@ -92,14 +92,21 @@
         }
 
         // --- 世界ランキングを取得して表示する関数 ---
-        async function displayRanking() {
-            const q = query(collection(db, "rankings"), orderBy("score", "desc"), limit(5));
-            const querySnapshot = await getDocs(q);
-            let html = "<h3>世界TOP 5</h3>";
+        import { onSnapshot, query, collection, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // この関数を、ゲーム開始時などに1回だけ呼び出しておきます
+        function setupRealtimeRanking() {
+          const q = query(collection(db, "rankings"), orderBy("score", "desc"), limit(5));
+
+          // データベースを見張り続ける（スナップショット）
+          onSnapshot(q, (querySnapshot) => {
+            let html = "<h3>世界TOP 5 (リアルタイム)</h3>";
             querySnapshot.forEach((doc) => {
-              html += `<p>${doc.data().name}: ${doc.data().score}回</p>`;
+              const data = doc.data();
+              html += `<p>${data.name}: ${data.score}回</p>`;
             });
             document.getElementById('rankingBoard').innerHTML = html;
+          });
         }
         
         function startTimer() {
@@ -199,11 +206,15 @@
                 // ...既存のカウント処理
             }
         });
+
+        // ページを開いた瞬間にランキング表示を開始する
+        setupRealtimeRanking();
     </script>
 
 </body>
 
 </html>
+
 
 
 
