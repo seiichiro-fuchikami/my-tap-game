@@ -97,6 +97,12 @@
 
         // 【リセット機能】
         resetBtn.addEventListener('click', () => {
+            // 鳴っている音を止める
+            finishNormalSound.pause();
+            finishNormalSound.currentTime = 0;
+            finishSpecialSound.pause();
+            finishSpecialSound.currentTime = 0;
+            
             clearInterval(timerId);
             count = 0;
             timeLeft = 10.0;
@@ -128,5 +134,6 @@
 </body>
 
 </html>
+
 
 
